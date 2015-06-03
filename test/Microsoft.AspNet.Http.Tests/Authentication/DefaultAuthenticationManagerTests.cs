@@ -18,7 +18,6 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
         public async Task AuthenticateWithNoAuthMiddlewareThrows()
         {
             var context = CreateContext();
-            Assert.Throws<InvalidOperationException>(() => context.Authentication.Authenticate("Foo"));
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await context.Authentication.AuthenticateAsync("Foo"));
         }
 
@@ -27,7 +26,7 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
         {
             var context = CreateContext();
             await context.Authentication.ChallengeAsync();
-            Assert.Equal(401, context.Response.StatusCode);
+            Assert.Equal(200, context.Response.StatusCode);
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => context.Authentication.ChallengeAsync("Foo"));
         }

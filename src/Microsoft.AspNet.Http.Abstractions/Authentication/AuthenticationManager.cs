@@ -14,19 +14,7 @@ namespace Microsoft.AspNet.Http.Authentication
     {
         public abstract IEnumerable<AuthenticationDescription> GetAuthenticationSchemes();
 
-        public void Authenticate(AuthenticateContext context)
-        {
-            AuthenticateAsync(context).GetAwaiter().GetResult();
-        }
-
         public abstract Task AuthenticateAsync(AuthenticateContext context);
-
-        public ClaimsPrincipal Authenticate(string authenticationScheme)
-        {
-            var context = new AuthenticateContext(authenticationScheme);
-            Authenticate(context);
-            return context.Principal;
-        }
 
         public async Task<ClaimsPrincipal> AuthenticateAsync(string authenticationScheme)
         {
