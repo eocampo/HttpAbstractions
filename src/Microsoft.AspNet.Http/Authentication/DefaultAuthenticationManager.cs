@@ -72,7 +72,6 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
                 await handler.AuthenticateAsync(context);
             }
 
-            // Verify all types ack'd
             if (!context.Accepted)
             {
                 throw new InvalidOperationException($"The following authentication scheme was not accepted: {context.AuthenticationScheme}");
@@ -97,7 +96,7 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
         }
 
         // You are not allowed access
-        public void Forbidden(string authenticationScheme, AuthenticationProperties properties) // 403
+        public void Forbidden(string authenticationScheme, AuthenticationProperties properties)
         {
             ChallengeInternal(authenticationScheme, properties, ChallengeBehavior.Forbidden);
         }
@@ -118,7 +117,6 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
                 handler.SignIn(signInContext);
             }
 
-            // Verify all types ack'd
             if (!signInContext.Accepted)
             {
                 throw new InvalidOperationException($"The following authentication scheme was not accepted: {authenticationScheme}");
@@ -135,7 +133,6 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
                 handler.SignOut(signOutContext);
             }
 
-            // Verify all types ack'd
             if (!string.IsNullOrWhiteSpace(authenticationScheme) && !signOutContext.Accepted)
             {
                 throw new InvalidOperationException($"The following authentication scheme was not accepted: {authenticationScheme}");
