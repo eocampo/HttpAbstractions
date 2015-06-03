@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Http.Features.Authentication;
 
 namespace Microsoft.AspNet.Http.Authentication
 {
@@ -11,9 +12,24 @@ namespace Microsoft.AspNet.Http.Authentication
     {
         public abstract IEnumerable<AuthenticationDescription> GetAuthenticationSchemes();
 
-        public abstract AuthenticationResult Authenticate(string authenticationScheme);
+        public abstract void Authenticate(AuthenticateContext context);
 
-        public abstract Task<AuthenticationResult> AuthenticateAsync(string authenticationScheme);
+        public abstract Task AuthenticateAsync(AuthenticateContext context);
+
+        // REVIEW: Move to extension methods?
+        public ClaimsPrincipal Authenticate(string authenticationScheme)
+        {
+            var context = new AuthenticateContext(authenticationScheme);
+            Authenticate(context);
+            return context.Principal;
+        }
+
+        public async Task<ClaimsPrincipal> AuthenticateAsync(string authenticationScheme)
+        {
+            var context = new AuthenticateContext(authenticationScheme);
+            await AuthenticateAsync(context);
+            return context.Principal;
+        }
 
         public virtual void Challenge()
         {

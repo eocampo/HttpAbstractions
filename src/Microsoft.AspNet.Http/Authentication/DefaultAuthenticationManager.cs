@@ -48,63 +48,42 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
             return describeContext.Results.Select(description => new AuthenticationDescription(description));
         }
 
-        public override AuthenticationResult Authenticate([NotNull] string authenticationScheme)
+        public override void Authenticate([NotNull] AuthenticateContext context)
         {
             var handler = HttpAuthenticationFeature.Handler;
 
-            var authenticateContext = new AuthenticateContext(authenticationScheme);
             if (handler != null)
             {
-                handler.Authenticate(authenticateContext);
+                handler.Authenticate(context);
             }
 
-            if (!authenticateContext.Accepted)
+            if (!context.Accepted)
             {
-                throw new InvalidOperationException($"The following authentication scheme was not accepted: {authenticationScheme}");
+                throw new InvalidOperationException($"The following authentication scheme was not accepted: {context.AuthenticationScheme}");
             }
-
-            if (authenticateContext.Principal == null)
-            {
-                return null;
-            }
-
-            return new AuthenticationResult(authenticateContext.Principal,
-                new AuthenticationProperties(authenticateContext.Properties),
-                new AuthenticationDescription(authenticateContext.Description));
         }
 
-        public override async Task<AuthenticationResult> AuthenticateAsync([NotNull] string authenticationScheme)
+        public override async Task AuthenticateAsync([NotNull] AuthenticateContext context)
         {
             var handler = HttpAuthenticationFeature.Handler;
 
-            var authenticateContext = new AuthenticateContext(authenticationScheme);
             if (handler != null)
             {
-                await handler.AuthenticateAsync(authenticateContext);
+                await handler.AuthenticateAsync(context);
             }
 
             // Verify all types ack'd
-            if (!authenticateContext.Accepted)
+            if (!context.Accepted)
             {
-                throw new InvalidOperationException($"The following authentication scheme was not accepted: {authenticationScheme}");
+                throw new InvalidOperationException($"The following authentication scheme was not accepted: {context.AuthenticationScheme}");
             }
-
-            if (authenticateContext.Principal == null)
-            {
-                return null;
-            }
-
-            return new AuthenticationResult(authenticateContext.Principal,
-                new AuthenticationProperties(authenticateContext.Properties),
-                new AuthenticationDescription(authenticateContext.Description));
         }
 
-        public override void Challenge(string authenticationScheme, AuthenticationProperties properties)
+        private void ChallengeInternal(string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior)
         {
-            HttpResponseFeature.StatusCode = 401;
             var handler = HttpAuthenticationFeature.Handler;
 
-            var challengeContext = new ChallengeContext(authenticationScheme, properties?.Items);
+            var challengeContext = new ChallengeContext(authenticationScheme, properties?.Items, behavior);
             if (handler != null)
             {
                 handler.Challenge(challengeContext);
@@ -115,6 +94,18 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
             {
                 throw new InvalidOperationException($"The following authentication scheme was not accepted: {authenticationScheme}");
             }
+        }
+
+        // You are not allowed access
+        public void Forbidden(string authenticationScheme, AuthenticationProperties properties) // 403
+        {
+            ChallengeInternal(authenticationScheme, properties, ChallengeBehavior.Forbidden);
+        }
+
+        // Sometimes send to login, sometimes not allowed, up to middleware (do the right thing)
+        public override void Challenge(string authenticationScheme, AuthenticationProperties properties)
+        {
+            ChallengeInternal(authenticationScheme, properties, ChallengeBehavior.Automatic);
         }
 
         public override void SignIn([NotNull] string authenticationScheme, [NotNull] ClaimsPrincipal principal, AuthenticationProperties properties)

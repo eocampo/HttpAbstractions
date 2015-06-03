@@ -8,13 +8,16 @@ namespace Microsoft.AspNet.Http.Features.Authentication
 {
     public class ChallengeContext
     {
-        public ChallengeContext(string authenticationScheme, IDictionary<string, string> properties)
+        public ChallengeContext(string authenticationScheme, IDictionary<string, string> properties, ChallengeBehavior behavior)
         {
             AuthenticationScheme = authenticationScheme;
             Properties = properties ?? new Dictionary<string, string>(StringComparer.Ordinal);
+            Behavior = behavior;
         }
 
         public string AuthenticationScheme { get; }
+
+        public ChallengeBehavior Behavior { get; }
 
         public IDictionary<string, string> Properties { get; }
 
