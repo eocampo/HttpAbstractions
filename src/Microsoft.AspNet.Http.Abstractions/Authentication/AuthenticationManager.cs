@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http.Features.Authentication;
 
@@ -49,15 +48,14 @@ namespace Microsoft.AspNet.Http.Authentication
             return SignInAsync(authenticationScheme, principal, properties: null);
         }
 
-        public Task ForbidAsync(string authenticationScheme)
-        {
-            return ForbidAsync(authenticationScheme, properties: null);
-        }
-
-        // Deny access (typically a 403)
         public Task ForbidAsync(string authenticationScheme, AuthenticationProperties properties)
         {
             return ChallengeAsync(authenticationScheme, properties, ChallengeBehavior.Forbidden);
+        }
+
+        public Task ForbidAsync(string authenticationScheme)
+        {
+            return ForbidAsync(authenticationScheme, properties: null);
         }
 
         public abstract Task ChallengeAsync(string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior);
