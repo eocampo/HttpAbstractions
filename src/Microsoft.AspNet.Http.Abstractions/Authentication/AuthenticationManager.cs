@@ -16,7 +16,6 @@ namespace Microsoft.AspNet.Http.Authentication
 
         public abstract Task AuthenticateAsync(AuthenticateContext context);
 
-        // REVIEW: Move to extension methods?
         public ClaimsPrincipal Authenticate(string authenticationScheme)
         {
             var context = new AuthenticateContext(authenticationScheme);
@@ -46,12 +45,29 @@ namespace Microsoft.AspNet.Http.Authentication
             Challenge(authenticationScheme: authenticationScheme, properties: null);
         }
 
-        public abstract void Challenge(string authenticationScheme, AuthenticationProperties properties);
+        // Leave it up to authentication handler to do the right thing for the challenge
+        public void Challenge(string authenticationScheme, AuthenticationProperties properties)
+        {
+            Challenge(authenticationScheme, properties, ChallengeBehavior.Automatic);
+        }
 
         public void SignIn(string authenticationScheme, ClaimsPrincipal principal)
         {
             SignIn(authenticationScheme, principal, properties: null);
         }
+
+        public void Forbid(string authenticationScheme)
+        {
+            Forbid(authenticationScheme, properties: null);
+        }
+
+        // Deny access (typically a 403)
+        public void Forbid(string authenticationScheme, AuthenticationProperties properties)
+        {
+            Challenge(authenticationScheme, properties, ChallengeBehavior.Forbidden);
+        }
+
+        public abstract void Challenge(string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior);
 
         public abstract void SignIn(string authenticationScheme, ClaimsPrincipal principal, AuthenticationProperties properties);
 

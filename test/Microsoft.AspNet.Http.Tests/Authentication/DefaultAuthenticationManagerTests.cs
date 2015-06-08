@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
         {
             var context = CreateContext();
             context.Authentication.Challenge();
-            Assert.Equal(200, context.Response.StatusCode);
+            Assert.Equal(401, context.Response.StatusCode);
 
             Assert.Throws<InvalidOperationException>(() => context.Authentication.Challenge("Foo"));
         }

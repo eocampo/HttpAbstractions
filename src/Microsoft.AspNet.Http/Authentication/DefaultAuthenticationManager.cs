@@ -78,8 +78,11 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
             }
         }
 
-        private void ChallengeInternal(string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior)
+        public override void Challenge(string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior)
         {
+            // TODO: move this somewhere else
+            HttpResponseFeature.StatusCode = 401;
+
             var handler = HttpAuthenticationFeature.Handler;
 
             var challengeContext = new ChallengeContext(authenticationScheme, properties?.Items, behavior);
@@ -93,18 +96,6 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
             {
                 throw new InvalidOperationException($"The following authentication scheme was not accepted: {authenticationScheme}");
             }
-        }
-
-        // You are not allowed access
-        public void Forbidden(string authenticationScheme, AuthenticationProperties properties)
-        {
-            ChallengeInternal(authenticationScheme, properties, ChallengeBehavior.Forbidden);
-        }
-
-        // Sometimes send to login, sometimes not allowed, up to middleware (do the right thing)
-        public override void Challenge(string authenticationScheme, AuthenticationProperties properties)
-        {
-            ChallengeInternal(authenticationScheme, properties, ChallengeBehavior.Automatic);
         }
 
         public override void SignIn([NotNull] string authenticationScheme, [NotNull] ClaimsPrincipal principal, AuthenticationProperties properties)
