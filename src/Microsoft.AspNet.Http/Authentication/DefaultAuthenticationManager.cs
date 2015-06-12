@@ -65,9 +65,6 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
 
         public override async Task ChallengeAsync([NotNull] string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior)
         {
-            // TODO: move this somewhere else
-            HttpResponseFeature.StatusCode = 401;
-
             var handler = HttpAuthenticationFeature.Handler;
 
             var challengeContext = new ChallengeContext(authenticationScheme, properties?.Items, behavior);

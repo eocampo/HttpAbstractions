@@ -1,7 +1,6 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -48,14 +47,15 @@ namespace Microsoft.AspNet.Http.Authentication
             return SignInAsync(authenticationScheme, principal, properties: null);
         }
 
-        public Task ForbidAsync(string authenticationScheme, AuthenticationProperties properties)
-        {
-            return ChallengeAsync(authenticationScheme, properties, ChallengeBehavior.Forbidden);
-        }
-
         public Task ForbidAsync(string authenticationScheme)
         {
             return ForbidAsync(authenticationScheme, properties: null);
+        }
+
+        // Deny access (typically a 403)
+        public Task ForbidAsync(string authenticationScheme, AuthenticationProperties properties)
+        {
+            return ChallengeAsync(authenticationScheme, properties, ChallengeBehavior.Forbidden);
         }
 
         public abstract Task ChallengeAsync(string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior);
