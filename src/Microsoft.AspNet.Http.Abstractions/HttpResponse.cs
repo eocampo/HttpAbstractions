@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNet.Http
 {
@@ -24,9 +25,9 @@ namespace Microsoft.AspNet.Http
 
         public abstract bool HasStarted { get; }
 
-        public abstract void OnResponseStarting(Action<object> callback, object state);
+        public abstract void OnResponseStarting(Func<object, Task> callback, object state);
 
-        public abstract void OnResponseCompleted(Action<object> callback, object state);
+        public abstract void OnResponseCompleted(Func<object, Task> callback, object state);
 
         public virtual void Redirect(string location)
         {

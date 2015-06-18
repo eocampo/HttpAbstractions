@@ -8,6 +8,10 @@ namespace Microsoft.AspNet.Http.Features.Authentication
 {
     public class ChallengeContext
     {
+        public ChallengeContext(string authenticationScheme) : this(authenticationScheme, properties: null, behavior: ChallengeBehavior.Automatic)
+        {
+        }
+
         public ChallengeContext(string authenticationScheme, IDictionary<string, string> properties, ChallengeBehavior behavior)
         {
             AuthenticationScheme = authenticationScheme;

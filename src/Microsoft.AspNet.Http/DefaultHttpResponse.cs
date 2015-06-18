@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNet.FeatureModel;
 using Microsoft.AspNet.Http.Features;
 using Microsoft.AspNet.Http.Features.Internal;
@@ -94,12 +95,12 @@ namespace Microsoft.AspNet.Http.Internal
             get { return HttpResponseFeature.HasStarted; }
         }
 
-        public override void OnResponseStarting(Action<object> callback, object state)
+        public override void OnResponseStarting(Func<object, Task> callback, object state)
         {
             HttpResponseFeature.OnResponseStarting(callback, state);
         }
 
-        public override void OnResponseCompleted(Action<object> callback, object state)
+        public override void OnResponseCompleted(Func<object, Task> callback, object state)
         {
             HttpResponseFeature.OnResponseCompleted(callback, state);
         }
