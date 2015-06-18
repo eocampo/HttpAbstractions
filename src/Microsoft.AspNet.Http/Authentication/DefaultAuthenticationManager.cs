@@ -96,7 +96,7 @@ namespace Microsoft.AspNet.Http.Authentication.Internal
             }
         }
 
-        public override async Task SignOutAsync(string authenticationScheme, AuthenticationProperties properties)
+        public override async Task SignOutAsync([NotNull] string authenticationScheme, AuthenticationProperties properties)
         {
             var handler = HttpAuthenticationFeature.Handler;
 

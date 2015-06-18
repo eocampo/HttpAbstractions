@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http.Features.Authentication;
+using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNet.Http.Authentication
 {
@@ -12,9 +13,9 @@ namespace Microsoft.AspNet.Http.Authentication
     {
         public abstract IEnumerable<AuthenticationDescription> GetAuthenticationSchemes();
 
-        public abstract Task AuthenticateAsync(AuthenticateContext context);
+        public abstract Task AuthenticateAsync([NotNull] AuthenticateContext context);
 
-        public async Task<ClaimsPrincipal> AuthenticateAsync(string authenticationScheme)
+        public async Task<ClaimsPrincipal> AuthenticateAsync([NotNull] string authenticationScheme)
         {
             var context = new AuthenticateContext(authenticationScheme);
             await AuthenticateAsync(context);
@@ -31,47 +32,47 @@ namespace Microsoft.AspNet.Http.Authentication
             return ChallengeAsync(authenticationScheme: null, properties: properties);
         }
 
-        public virtual Task ChallengeAsync(string authenticationScheme)
+        public virtual Task ChallengeAsync([NotNull] string authenticationScheme)
         {
             return ChallengeAsync(authenticationScheme: authenticationScheme, properties: null);
         }
 
         // Leave it up to authentication handler to do the right thing for the challenge
-        public Task ChallengeAsync(string authenticationScheme, AuthenticationProperties properties)
+        public Task ChallengeAsync([NotNull] string authenticationScheme, AuthenticationProperties properties)
         {
             return ChallengeAsync(authenticationScheme, properties, ChallengeBehavior.Automatic);
         }
 
-        public Task SignInAsync(string authenticationScheme, ClaimsPrincipal principal)
+        public Task SignInAsync([NotNull] string authenticationScheme, ClaimsPrincipal principal)
         {
             return SignInAsync(authenticationScheme, principal, properties: null);
         }
 
-        public Task ForbidAsync(string authenticationScheme)
+        public Task ForbidAsync([NotNull] string authenticationScheme)
         {
             return ForbidAsync(authenticationScheme, properties: null);
         }
 
         // Deny access (typically a 403)
-        public Task ForbidAsync(string authenticationScheme, AuthenticationProperties properties)
+        public Task ForbidAsync([NotNull] string authenticationScheme, AuthenticationProperties properties)
         {
             return ChallengeAsync(authenticationScheme, properties, ChallengeBehavior.Forbidden);
         }
 
-        public abstract Task ChallengeAsync(string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior);
+        public abstract Task ChallengeAsync([NotNull] string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior);
 
-        public abstract Task SignInAsync(string authenticationScheme, ClaimsPrincipal principal, AuthenticationProperties properties);
+        public abstract Task SignInAsync([NotNull] string authenticationScheme, ClaimsPrincipal principal, AuthenticationProperties properties);
 
         public Task SignOutAsync()
         {
             return SignOutAsync(authenticationScheme: null, properties: null);
         }
 
-        public Task SignOutAsync(string authenticationScheme)
+        public Task SignOutAsync([NotNull] string authenticationScheme)
         {
             return SignOutAsync(authenticationScheme, properties: null);
         }
 
-        public abstract Task SignOutAsync(string authenticationScheme, AuthenticationProperties properties);
+        public abstract Task SignOutAsync([NotNull] string authenticationScheme, AuthenticationProperties properties);
     }
 }
