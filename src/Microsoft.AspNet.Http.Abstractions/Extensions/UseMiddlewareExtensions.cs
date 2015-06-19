@@ -23,11 +23,25 @@ namespace Microsoft.AspNet.Builder
             return builder.Use(next =>
             {
                 var instance = ActivatorUtilities.CreateInstance(builder.ApplicationServices, middleware, new[] { next }.Concat(args).ToArray());
+
                 var methodinfo = middleware.GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public);
+                if (methodinfo == null)
+                {
+                    throw new InvalidOperationException("No public Invoke method found");
+                }
+                if (!typeof(Task).IsAssignableFrom(methodinfo.ReturnType))
+                {
+                    throw new InvalidOperationException("Invoke does not return an object of type Task");
+                }
                 var parameters = methodinfo.GetParameters();
+
+                if (parameters.Length == 0)
+                {
+                    throw new InvalidOperationException("No parameters passed into Invoke method");
+                }
                 if (parameters[0].ParameterType != typeof(HttpContext))
                 {
-                    throw new Exception("Middleware Invoke method must take first argument of HttpContext");
+                    throw new InvalidOperationException("Middleware Invoke method must take first argument of HttpContext");
                 }
                 if (parameters.Length == 1)
                 {
