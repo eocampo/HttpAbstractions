@@ -29,20 +29,24 @@ namespace Microsoft.AspNet.Builder
                 {
                     throw new InvalidOperationException("No public Invoke method found");
                 }
+
                 if (!typeof(Task).IsAssignableFrom(methodinfo.ReturnType))
                 {
                     throw new InvalidOperationException("Invoke does not return an object of type Task");
                 }
+
                 var parameters = methodinfo.GetParameters();
 
                 if (parameters.Length == 0 || parameters[0].ParameterType != typeof(HttpContext))
                 {
                     throw new InvalidOperationException("Middleware Invoke method must take first argument of HttpContext");
                 }
+
                 if (parameters.Length == 1)
                 {
                     return (RequestDelegate)methodinfo.CreateDelegate(typeof(RequestDelegate), instance);
                 }
+
                 return context =>
                 {
                     var serviceProvider = context.RequestServices ?? context.ApplicationServices ?? applicationServices;
@@ -50,6 +54,7 @@ namespace Microsoft.AspNet.Builder
                     {
                         throw new Exception("IServiceProvider is not available");
                     }
+
                     var arguments = new object[parameters.Length];
                     arguments[0] = context;
                     for(var index = 1; index != parameters.Length; ++index)
@@ -60,6 +65,7 @@ namespace Microsoft.AspNet.Builder
                         {
                             throw new Exception(string.Format("No service for type '{0}' has been registered.", serviceType));
                         }
+
                     }
                     return (Task)methodinfo.Invoke(instance, arguments);
                 };
