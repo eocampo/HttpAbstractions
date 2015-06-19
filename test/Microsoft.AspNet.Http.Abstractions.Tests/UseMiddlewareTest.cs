@@ -20,7 +20,7 @@ namespace Microsoft.AspNet.Http
             var builder = new ApplicationBuilder(mockServiceProvider);
             builder.UseMiddleware(typeof(MiddlewareNoParameters));
             var exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
-            Assert.Equal("No parameters passed into Invoke method", exception.Message);
+            Assert.Equal("Middleware Invoke method must take first argument of HttpContext", exception.Message);
            // builder.Build();
            
            

@@ -35,11 +35,7 @@ namespace Microsoft.AspNet.Builder
                 }
                 var parameters = methodinfo.GetParameters();
 
-                if (parameters.Length == 0)
-                {
-                    throw new InvalidOperationException("No parameters passed into Invoke method");
-                }
-                if (parameters[0].ParameterType != typeof(HttpContext))
+                if (parameters.Length == 0 || parameters[0].ParameterType != typeof(HttpContext))
                 {
                     throw new InvalidOperationException("Middleware Invoke method must take first argument of HttpContext");
                 }
