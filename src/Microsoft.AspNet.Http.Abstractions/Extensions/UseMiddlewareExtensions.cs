@@ -23,7 +23,6 @@ namespace Microsoft.AspNet.Builder
             return builder.Use(next =>
             {
                 var instance = ActivatorUtilities.CreateInstance(builder.ApplicationServices, middleware, new[] { next }.Concat(args).ToArray());
-
                 var methodinfo = middleware.GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public);
                 if (methodinfo == null)
                 {
