@@ -14,9 +14,9 @@ namespace Microsoft.AspNet.Http
         [Fact]
         public void UseMiddleware_WithNoParameters_ThrowsException()
         {
-            var mockServiceProvider = new MockServiceProvider();
+            var mockServiceProvider = new DummyServiceProvider();
             var builder = new ApplicationBuilder(mockServiceProvider);
-            builder.UseMiddleware(typeof(MiddlewareNoParameters));
+            builder.UseMiddleware(typeof(MiddlewareNoParametersStub));
             var exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
             Assert.Equal("Middleware Invoke method must take first argument of HttpContext", exception.Message); 
         }
@@ -24,9 +24,9 @@ namespace Microsoft.AspNet.Http
         [Fact]
         public void UseMiddleware_NonTaskReturnType_ThrowsException()
         {
-            var mockServiceProvider = new MockServiceProvider();
+            var mockServiceProvider = new DummyServiceProvider();
             var builder = new ApplicationBuilder(mockServiceProvider);
-            builder.UseMiddleware(typeof(MiddlewareNonTaskReturn));
+            builder.UseMiddleware(typeof(MiddlewareNonTaskReturnStub));
             var exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
             Assert.Equal("Invoke does not return an object of type Task", exception.Message);
         }
@@ -34,14 +34,14 @@ namespace Microsoft.AspNet.Http
         [Fact]
         public void UseMiddleware_NoInvokeMethod_ThrowsException()
         {          
-            var mockServiceProvider = new MockServiceProvider();
+            var mockServiceProvider = new DummyServiceProvider();
             var builder = new ApplicationBuilder(mockServiceProvider);
-            builder.UseMiddleware(typeof(MiddlewareNoInvoke));
+            builder.UseMiddleware(typeof(MiddlewareNoInvokeStub));
             var exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
             Assert.Equal("No public Invoke method found", exception.Message);
         }
 
-        private class MockServiceProvider : IServiceProvider
+        private class DummyServiceProvider : IServiceProvider
         {
             public object GetService(Type serviceType)
             {
@@ -49,9 +49,9 @@ namespace Microsoft.AspNet.Http
             }
         }
 
-        private class MiddlewareNoParameters
+        private class MiddlewareNoParametersStub
         {
-            public MiddlewareNoParameters(RequestDelegate next)
+            public MiddlewareNoParametersStub(RequestDelegate next)
             {
             }
 
@@ -61,9 +61,9 @@ namespace Microsoft.AspNet.Http
             }
         }
 
-        private class MiddlewareNonTaskReturn
+        private class MiddlewareNonTaskReturnStub
         {
-            public MiddlewareNonTaskReturn(RequestDelegate next)
+            public MiddlewareNonTaskReturnStub(RequestDelegate next)
             {
             }
 
@@ -73,9 +73,9 @@ namespace Microsoft.AspNet.Http
             }
         }
          
-        private class MiddlewareNoInvoke
+        private class MiddlewareNoInvokeStub
         {
-            public MiddlewareNoInvoke(RequestDelegate next)
+            public MiddlewareNoInvokeStub(RequestDelegate next)
             {
             }
         }
