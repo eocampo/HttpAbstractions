@@ -27,50 +27,31 @@ namespace Microsoft.AspNet.Http
 
         public abstract void OnResponseStarting(Func<object, Task> callback, object state);
 
-        public void OnResponseStarting(Func<Task> callback)
-        {
-            OnResponseStarting(s => callback(), state: null);
-        }
+        public virtual void OnResponseStarting(Func<Task> callback) => OnResponseStarting(s => callback(), state: null);
 
-        public void OnResponseStarting(Action callback)
-        {
-            OnResponseStarting(s => callback(), state: null);
-        }
+        public virtual void OnResponseStarting(Action callback) => OnResponseStarting(s => callback(), state: null);
 
-        public void OnResponseStarting(Action<object> callback, object state)
-        {
+        public virtual void OnResponseStarting(Action<object> callback, object state) =>
             OnResponseStarting(s =>
             {
                 callback(s);
                 return Task.FromResult(0);
             }, state);
-        }
 
         public abstract void OnResponseCompleted(Func<object, Task> callback, object state);
 
-        public void OnResponseCompleted(Func<Task> callback)
-        {
-            OnResponseCompleted(s => callback(), state: null);
-        }
+        public virtual void OnResponseCompleted(Func<Task> callback) => OnResponseCompleted(s => callback(), state: null);
 
-        public void OnResponseCompleted(Action callback)
-        {
-            OnResponseCompleted(s => callback(), state: null);
-        }
+        public virtual void OnResponseCompleted(Action callback) => OnResponseCompleted(s => callback(), state: null);
 
-        public void OnResponseCompleted(Action<object> callback, object state)
-        {
+        public virtual void OnResponseCompleted(Action<object> callback, object state) =>
             OnResponseCompleted(s =>
             {
                 callback(s);
                 return Task.FromResult(0);
             }, state);
-        }
 
-        public virtual void Redirect(string location)
-        {
-            Redirect(location, permanent: false);
-        }
+        public virtual void Redirect(string location) => Redirect(location, permanent: false);
 
         public abstract void Redirect(string location, bool permanent);
     }
