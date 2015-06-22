@@ -9,6 +9,8 @@ namespace Microsoft.AspNet.Http
 {
     public abstract class HttpResponse
     {
+        private static readonly Func<object, Task> _callbackDelegate = callback => ((Func<Task>)callback)();
+
         public abstract HttpContext HttpContext { get; }
 
         public abstract int StatusCode { get; set; }
@@ -27,29 +29,11 @@ namespace Microsoft.AspNet.Http
 
         public abstract void OnResponseStarting(Func<object, Task> callback, object state);
 
-        public virtual void OnResponseStarting(Func<Task> callback) => OnResponseStarting(s => callback(), state: null);
-
-        public virtual void OnResponseStarting(Action callback) => OnResponseStarting(s => callback(), state: null);
-
-        public virtual void OnResponseStarting(Action<object> callback, object state) =>
-            OnResponseStarting(s =>
-            {
-                callback(s);
-                return Task.FromResult(0);
-            }, state);
+        public virtual void OnResponseStarting(Func<Task> callback) => OnResponseStarting(_callbackDelegate, state: callback);
 
         public abstract void OnResponseCompleted(Func<object, Task> callback, object state);
 
-        public virtual void OnResponseCompleted(Func<Task> callback) => OnResponseCompleted(s => callback(), state: null);
-
-        public virtual void OnResponseCompleted(Action callback) => OnResponseCompleted(s => callback(), state: null);
-
-        public virtual void OnResponseCompleted(Action<object> callback, object state) =>
-            OnResponseCompleted(s =>
-            {
-                callback(s);
-                return Task.FromResult(0);
-            }, state);
+        public virtual void OnResponseCompleted(Func<Task> callback) => OnResponseCompleted(_callbackDelegate, state: callback);
 
         public virtual void Redirect(string location) => Redirect(location, permanent: false);
 
