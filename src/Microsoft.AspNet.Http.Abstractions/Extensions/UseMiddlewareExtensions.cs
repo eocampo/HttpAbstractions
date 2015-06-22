@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Http.Abstractions;
 using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNet.Builder
@@ -23,22 +24,27 @@ namespace Microsoft.AspNet.Builder
             return builder.Use(next =>
             {
                 var instance = ActivatorUtilities.CreateInstance(builder.ApplicationServices, middleware, new[] { next }.Concat(args).ToArray());
-                var methodinfo = middleware.GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public);
+                var methods = middleware.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+                if (methods.Count(m => String.Equals(m.Name, "Invoke", StringComparison.Ordinal)) > 1)
+                {
+                    throw new InvalidOperationException(Resources.FormatException_UseMiddleMutlipleInvokes("Invoke"));
+                }
+                var methodinfo = methods.SingleOrDefault(m => String.Equals(m.Name, "Invoke", StringComparison.Ordinal));
                 if (methodinfo == null)
                 {
-                    throw new InvalidOperationException("No public Invoke method found.");
+                    throw new InvalidOperationException(Resources.FormatException_UseMiddlewareNoInvokeMethod("Invoke"));
                 }
 
                 if (!typeof(Task).IsAssignableFrom(methodinfo.ReturnType))
                 {
-                    throw new InvalidOperationException("Invoke does not return an object of type Task.");
+                    throw new InvalidOperationException(Resources.FormatException_UseMiddlewareNonTaskReturnType("Invoke", nameof(Task)));
                 }
 
                 var parameters = methodinfo.GetParameters();
 
                 if (parameters.Length == 0 || parameters[0].ParameterType != typeof(HttpContext))
                 {
-                    throw new InvalidOperationException("The Invoke method's first argument must be of type HttpContext.");
+                    throw new InvalidOperationException(Resources.FormatException_UseMiddlewareNoParameters("Invoke",nameof(HttpContext)));
                 }
 
                 if (parameters.Length == 1)
@@ -51,7 +57,7 @@ namespace Microsoft.AspNet.Builder
                     var serviceProvider = context.RequestServices ?? context.ApplicationServices ?? applicationServices;
                     if (serviceProvider == null)
                     {
-                        throw new Exception("IServiceProvider is not available.");
+                        throw new Exception(Resources.FormatException_UseMiddlewareIServiceProviderNotAvailable(nameof(IServiceProvider)));
                     }
 
                     var arguments = new object[parameters.Length];

@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Builder.Internal;
+using Microsoft.AspNet.Http.Abstractions;
 using Xunit;
 
 namespace Microsoft.AspNet.Http
@@ -18,7 +19,8 @@ namespace Microsoft.AspNet.Http
             var builder = new ApplicationBuilder(mockServiceProvider);
             builder.UseMiddleware(typeof(MiddlewareNoParametersStub));
             var exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
-            Assert.Equal("Middleware Invoke method must take first argument of HttpContext", exception.Message); 
+
+            Assert.Equal(Resources.FormatException_UseMiddlewareNoParameters("Invoke",nameof(HttpContext)), exception.Message); 
         }
 
         [Fact]
@@ -28,7 +30,7 @@ namespace Microsoft.AspNet.Http
             var builder = new ApplicationBuilder(mockServiceProvider);
             builder.UseMiddleware(typeof(MiddlewareNonTaskReturnStub));
             var exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
-            Assert.Equal("Invoke does not return an object of type Task", exception.Message);
+            Assert.Equal(Resources.FormatException_UseMiddlewareNonTaskReturnType("Invoke", nameof(Task)), exception.Message);
         }
 
         [Fact]
@@ -38,7 +40,17 @@ namespace Microsoft.AspNet.Http
             var builder = new ApplicationBuilder(mockServiceProvider);
             builder.UseMiddleware(typeof(MiddlewareNoInvokeStub));
             var exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
-            Assert.Equal("No public Invoke method found", exception.Message);
+            Assert.Equal(Resources.FormatException_UseMiddlewareNoInvokeMethod("Invoke"), exception.Message);
+        }
+
+        [Fact]
+        public void UseMiddleware_MutlipleInvokeMethods_ThrowsException()
+        {
+            var mockServiceProvider = new DummyServiceProvider();
+            var builder = new ApplicationBuilder(mockServiceProvider);
+            builder.UseMiddleware(typeof(MiddlewareMultipleInvokesStub));
+            var exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
+            Assert.Equal(Resources.FormatException_UseMiddleMutlipleInvokes("Invoke"), exception.Message);
         }
 
         private class DummyServiceProvider : IServiceProvider
@@ -77,6 +89,23 @@ namespace Microsoft.AspNet.Http
         {
             public MiddlewareNoInvokeStub(RequestDelegate next)
             {
+            }
+        }
+
+        private class MiddlewareMultipleInvokesStub
+        {
+            public MiddlewareMultipleInvokesStub(RequestDelegate next)
+            {
+            }
+
+            public Task Invoke(HttpContext context)
+            {
+                return Task.FromResult(0);
+            }
+
+            public Task Invoke(HttpContext context, int i)
+            {
+                return Task.FromResult(0);
             }
         }
     }
