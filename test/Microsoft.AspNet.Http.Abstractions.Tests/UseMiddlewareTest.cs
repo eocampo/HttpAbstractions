@@ -12,7 +12,7 @@ namespace Microsoft.AspNet.Http
     public class UseMiddlewareTest
     {
         [Fact]
-        public void UseMiddlewareNoParameters()
+        public void UseMiddleware_WithNoParameters_ThrowsException()
         {
             var mockServiceProvider = new MockServiceProvider();
             var builder = new ApplicationBuilder(mockServiceProvider);
@@ -22,7 +22,7 @@ namespace Microsoft.AspNet.Http
         }
 
         [Fact]
-        public void UseMiddlewareNonTaskReturnType()
+        public void UseMiddleware_NonTaskReturnType_ThrowsException()
         {
             var mockServiceProvider = new MockServiceProvider();
             var builder = new ApplicationBuilder(mockServiceProvider);
@@ -32,7 +32,7 @@ namespace Microsoft.AspNet.Http
         }
 
         [Fact]
-        public void UseMiddlewareInvokeMissing()
+        public void UseMiddleware_NoInvokeMethod_ThrowsException()
         {          
             var mockServiceProvider = new MockServiceProvider();
             var builder = new ApplicationBuilder(mockServiceProvider);

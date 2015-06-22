@@ -26,19 +26,19 @@ namespace Microsoft.AspNet.Builder
                 var methodinfo = middleware.GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public);
                 if (methodinfo == null)
                 {
-                    throw new InvalidOperationException("No public Invoke method found");
+                    throw new InvalidOperationException("No public Invoke method found.");
                 }
 
                 if (!typeof(Task).IsAssignableFrom(methodinfo.ReturnType))
                 {
-                    throw new InvalidOperationException("Invoke does not return an object of type Task");
+                    throw new InvalidOperationException("Invoke does not return an object of type Task.");
                 }
 
                 var parameters = methodinfo.GetParameters();
 
                 if (parameters.Length == 0 || parameters[0].ParameterType != typeof(HttpContext))
                 {
-                    throw new InvalidOperationException("Middleware Invoke method must take first argument of HttpContext");
+                    throw new InvalidOperationException("The Invoke method's first argument must be of type HttpContext.");
                 }
 
                 if (parameters.Length == 1)
@@ -51,7 +51,7 @@ namespace Microsoft.AspNet.Builder
                     var serviceProvider = context.RequestServices ?? context.ApplicationServices ?? applicationServices;
                     if (serviceProvider == null)
                     {
-                        throw new Exception("IServiceProvider is not available");
+                        throw new Exception("IServiceProvider is not available.");
                     }
 
                     var arguments = new object[parameters.Length];
