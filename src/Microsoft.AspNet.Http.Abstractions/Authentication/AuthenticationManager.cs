@@ -24,12 +24,12 @@ namespace Microsoft.AspNet.Http.Authentication
 
         public virtual Task ChallengeAsync()
         {
-            return ChallengeAsync(authenticationScheme: null, properties: null);
+            return ChallengeAsync(properties: null);
         }
 
         public virtual Task ChallengeAsync(AuthenticationProperties properties)
         {
-            return ChallengeAsync(authenticationScheme: null, properties: properties);
+            return ChallengeAsync(authenticationScheme: string.Empty, properties: properties);
         }
 
         public virtual Task ChallengeAsync([NotNull] string authenticationScheme)
@@ -43,7 +43,7 @@ namespace Microsoft.AspNet.Http.Authentication
             return ChallengeAsync(authenticationScheme, properties, ChallengeBehavior.Automatic);
         }
 
-        public Task SignInAsync([NotNull] string authenticationScheme, ClaimsPrincipal principal)
+        public Task SignInAsync([NotNull] string authenticationScheme, [NotNull] ClaimsPrincipal principal)
         {
             return SignInAsync(authenticationScheme, principal, properties: null);
         }
@@ -61,12 +61,7 @@ namespace Microsoft.AspNet.Http.Authentication
 
         public abstract Task ChallengeAsync([NotNull] string authenticationScheme, AuthenticationProperties properties, ChallengeBehavior behavior);
 
-        public abstract Task SignInAsync([NotNull] string authenticationScheme, ClaimsPrincipal principal, AuthenticationProperties properties);
-
-        public Task SignOutAsync()
-        {
-            return SignOutAsync(authenticationScheme: null, properties: null);
-        }
+        public abstract Task SignInAsync([NotNull] string authenticationScheme, [NotNull] ClaimsPrincipal principal, AuthenticationProperties properties);
 
         public Task SignOutAsync([NotNull] string authenticationScheme)
         {
