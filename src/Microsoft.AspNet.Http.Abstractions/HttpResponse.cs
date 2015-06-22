@@ -27,6 +27,11 @@ namespace Microsoft.AspNet.Http
 
         public abstract void OnResponseStarting(Func<object, Task> callback, object state);
 
+        public void OnResponseStarting(Func<object, Task> callback)
+        {
+            OnResponseStarting(callback, state: null);
+        }
+
         public abstract void OnResponseCompleted(Func<object, Task> callback, object state);
 
         public virtual void Redirect(string location)
